@@ -144,3 +144,42 @@
 | `setxor`                | 设置两个数组的异或                                           |
 | `union`                 | 设置两个数组的并集                                           |
 | `unique`                | 使数组中的值唯一                                             |
+
+## 条件判断语句
+
+```matlab
+% if end语句
+if <expression>
+	<expression>
+end
+
+% if else end语句
+if <expression>
+	<expression>
+else 
+	<expression>
+end
+
+% if elseif ... else end语句
+if <expression>
+	<expression>
+elseif <expression>
+	<expression>
+else 
+	<expression>
+end
+
+% switch语句
+switch <switch_expression>
+   case <case_expression>
+      <statements>
+   case <case_expression>
+      <statements>
+   otherwise
+      <statements>
+end
+
+
+
+```
+
