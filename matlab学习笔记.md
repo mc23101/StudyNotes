@@ -178,8 +178,45 @@ switch <switch_expression>
    otherwise
       <statements>
 end
-
-
-
 ```
+
+## 循环语句
+
+```matlab
+% while语句
+while(a>20):
+
+end
+```
+
+`for`循环的语法是 
+
+```matlab
+for index = values
+   <program statements>
+            ...
+end
+```
+
+值(`values`)具有以下格式 -
+
+| 值格式                | 描述                                                         |
+| --------------------- | ------------------------------------------------------------ |
+| `initval:endval`      | `index`变量从`initval`到`endval`每次递增`1`，并重复程序语句的执行，直到`index`大于`endval`。 |
+| `initval:step:endval` | 通过每次迭代值步长(`step`)增加索引(`index`)的值，或者当`step`为负时递减。 |
+| `valArray`            | 在每个迭代中从数组`valArray`的后续列创建列向量索引。 例如，在第一次迭代中，`index = valArray(:，1)`。 循环最多执行`n`次，其中`n`是由`numel(valArray，1，:)`给出的`valArray`的列数。`valArray`可以是任何MATLAB数据类型，包括字符串，单元格数组或结构体。 |
+
+```matlab
+% for语句
+% 输出[10,20]
+for a = 10:20 
+   fprintf('value of a: %d\n', a);
+end
+```
+
+## 数组、矩阵、向量
+
+## 绘制图像
+
+
 
