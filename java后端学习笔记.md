@@ -246,10 +246,6 @@ whenComplete是当某个任务执行完成后执行的回调方法，会将执�
 
 exceptionally方法指定某个任务执行异常时执行的回调方法，会将抛出异常作为参数传递到回调方法中，如果该任务正常执行则会exceptionally方法返回的CompletionStage的result就是该任务正常执行的结果.
 
-
-
-
-
 ```java
 //在同一个线程下执行回调
 CompletableFuture<T> whenComplete(BiConsumer<? super T, ? super Throwable> action)
@@ -272,6 +268,10 @@ CompletableFuture<T> whenCompleteAsync(BiConsumer<? super T, ? super Throwable> 
    
 
 
+
+# Maven用法介绍
+
+# Gradle用法介绍
 
 # Docker
 
@@ -340,7 +340,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 
 
-# SpringCloudAlibaba介绍
+# SpringCloudAlibaba用法介绍
 
 SpringCloudAlibaba介绍文档：[点击进入](https://spring-cloud-alibaba-group.github.io/github-pages/hoxton/zh-cn/index.html#_%E4%BB%8B%E7%BB%8D)
 
@@ -2961,6 +2961,24 @@ SpringCloudAlibaba组件版本对照：
 |      2.1.1.RELEASE or 2.0.1.RELEASE or 1.5.1.RELEASE      |    1.7.0     |   1.1.4   |    4.4.0     |   2.7.3   |   0.9.0   |
 |      2.1.0.RELEASE or 2.0.0.RELEASE or 1.5.0.RELEASE      |    1.6.3     |   1.1.1   |    4.4.0     |   2.7.3   |   0.7.1   |
 
+## SpringBoot项目打包问题
+
+项目打包后，如果无法正常运行，请检查Maven是否有配置打包插件
+
+```xml
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.weixin.SmallsystemApplication</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+
 ## 解决跨域请求问题
 
 ### 开发时临时解决
@@ -2995,3 +3013,7 @@ SpringCloudAlibaba组件版本对照：
 
 ## Nacos注册中心服务使用命名空间，导致无法使用服务
 解决方案：使用服务发现时，不要指定命名空间
+
+## Nacos配置中心，文件无后缀，导致文件无法被正常读取
+
+解决方案：新建配置文件时，需要添加文件后缀,例如：`.yaml`、`.json`等
