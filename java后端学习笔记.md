@@ -1648,7 +1648,14 @@ docker exec -it redis redis-cli
 
 ## SpringBoot集成Redis
 
-### 更换SpringData的Redis客户端
+### Lettuce和Jedis的区别
+
+jedis和Lettuce都是Redis的客户端，它们都可以连接Redis服务器，但是在SpringBoot2.0之后默认都是使用的Lettuce这个客户端连接Redis服务器。因为当使用Jedis客户端连接Redis服务器的时候，每个线程都要拿自己创建的Jedis实例去连接Redis客户端，当有很多个线程的时候，不仅开销大需要反复的创建关闭一个Jedis连接，而且也是线程不安全的，一个线程通过Jedis实例更改Redis服务器中的数据之后会影响另一个线程；
+
+但是如果使用Lettuce这个客户端连接Redis服务器的时候，就不会出现上面的情况，Lettuce底层使用的是Netty，当有多个线程都需要连接Redis服务器的时候，可以保证只创建一个Lettuce连接，使所有的线程共享这一个Lettuce连接，这样可以减少创建关闭一个Lettuce连接时候的开销；而且这种方式也是线程安全的，不会出现一个线程通过Lettuce更改Redis服务器中的数据之后而影响另一个线程的情况；
+
+
+### 更换Redis客户端
 
 ```xml
 <dependency>
@@ -1668,7 +1675,59 @@ docker exec -it redis redis-cli
 </dependency>
 ```
 
-### 基本操作
+### 修改序列化反序列化器
+
+```java
+@Configuration
+public class RedisTemplateConfig {
+ 
+	/**
+     * redisTemplate 序列化使用的jdkSerializeable, 存储二进制字节码, 所以自定义序列化类
+     * @param redisConnectionFactory
+     * @return
+     */
+    @Bean
+    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+ 
+        // 使用Jackson2JsonRedisSerialize 替换默认序列化
+        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+ 
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+ 
+        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+ 
+        // 设置value的序列化规则和 key的序列化规则
+        redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.afterPropertiesSet();
+        return redisTemplate;
+    }
+
+}
+```
+
+### RedisTemplate基本操作
+#### String操作
+
+`redisTemplate.opsForValue()`是对String进行操作，具体操作方法如下
+
+|                  方法                   |                             说明                             |
+| :-------------------------------------: | :----------------------------------------------------------: |
+|           `set("num","123")`            |                  设置键值为num缓存的值为123                  |
+| `set("num","123",10, TimeUnit.SECONDS)` |         设置键值为num缓存的值为123,并且在10s中后失效         |
+|              `get("num")`               |                    获取缓存键值为num的值                     |
+|         `set("key","redis", 6)`         | 覆写(overwrite)给定 key 所储存的字符串值，从偏移量 offset 开始 |
+
+
+
+#### List操作
+#### Set操作
+#### Hash操作
+#### Zset操作
 
 # Redisson用法介绍
 
@@ -2981,8 +3040,6 @@ SpringCloudAlibaba组件版本对照：
 
 ## 解决跨域请求问题
 
-### 开发时临时解决
-
 1. 新建配置类
 
 2. 配置允许的跨域请求
@@ -3009,9 +3066,22 @@ SpringCloudAlibaba组件版本对照：
    }
    ```
 
-### 部署nagix
+ 3. 配置删除重复响应头
+
+    ```yaml
+    spring:
+      cloud:
+        gateway:
+          default-filters:
+            - DedupeResponseHeader=Vary Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+    ```
+
+    
+
+
 
 ## Nacos注册中心服务使用命名空间，导致无法使用服务
+
 解决方案：使用服务发现时，不要指定命名空间
 
 ## Nacos配置中心，文件无后缀，导致文件无法被正常读取
