@@ -1857,58 +1857,7 @@ public class RedissonConfig{
 
 # SpringSecurity用法介绍
 
-## Hello Serurity
-
-实现最简单的SpringSecurity登录，只需配置一个`UserDetailsService`,访问`localhost:8080`时，则会让我们登录账号密码.
-
-```java
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-@EnableWebSecurity
-public class WebSecurityConfig implements WebMvcConfigurer {
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        InMemoryUserDetailsManager memoryUserDetail=new InMemoryUserDetailsManager();
-        memoryUserDetail.createUser(User.withDefaultPasswordEncoder().username("user").password("password").roles("USER").build());
-        return memoryUserDetail;
-    }
-}
-
-```
-
-## 使用配置类设置内存密码
-
-```java
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-@Configuration
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().withUser("admin").password("admin").roles("admin");
-    }
-
-    @Bean
-    PasswordEncoder password(){
-        return new BCryptPasswordEncoder();
-    }
-
-}
-```
-
-## 使用UserDetailsService完成自定义认证逻辑(重要)
+## 使用UserDetailsService完成自定义认证逻辑
 
 # SpringCache用法介绍
 
